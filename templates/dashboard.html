@@ -1,0 +1,165 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <div style="font-size: 28px; font-weight: 800; color: #0f172a; letter-spacing: -0.5px;">🏠 Dashboard</div>
+    <div style="font-weight: 600; color: #64748b; background: white; padding: 8px 16px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); border: 1px solid #e2e8f0;">👋 {{ name }}</div>
+</div>
+
+<div class="card" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(236, 72, 153, 0.05)); border-left: 4px solid #3b82f6;">
+    <h3 style="font-size: 1.5rem; color: #0f172a; margin-bottom: 10px;">Welcome to Vehicle Maintenance System 🚀</h3>
+    <p style="color: #64748b; font-size: 1.05rem;">Manage vehicles, predict maintenance & track performance effortlessly.</p>
+</div>
+
+<div style="display: flex; gap: 15px; margin-bottom: 30px;">
+    <a href="/vehicles" style="text-decoration:none;"><button><i class="fas fa-car" style="margin-right: 8px;"></i> Vehicles</button></a>
+    <a href="/prediction" style="text-decoration:none;"><button style="background: white; color: #0f172a; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px rgba(0,0,0,0.02);"><i class="fas fa-chart-line" style="margin-right: 8px;"></i> Predictions</button></a>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 25px; margin-bottom: 30px;">
+    <div class="card stat" style="background: linear-gradient(135deg, #3b82f6, #6366f1); color: white; border: none; margin-bottom: 0;">
+        <h3 style="color: rgba(255,255,255,0.9); font-size: 15px; font-weight: 500; margin-bottom: 5px;">Total Vehicles</h3>
+        <p style="font-size: 36px; font-weight: 800; margin:0;">{{ total_vehicles }}</p>
+    </div>
+    <div class="card stat" style="background: linear-gradient(135deg, #ef4444, #f97316); color: white; border: none; margin-bottom: 0;">
+        <h3 style="color: rgba(255,255,255,0.9); font-size: 15px; font-weight: 500; margin-bottom: 5px;">Maintenance Alerts</h3>
+        <p style="font-size: 36px; font-weight: 800; margin:0;">{{ maintenance_due }}</p>
+    </div>
+    <div class="card stat" style="background: linear-gradient(135deg, #10b981, #22c55e); color: white; border: none; margin-bottom: 0;">
+        <h3 style="color: rgba(255,255,255,0.9); font-size: 15px; font-weight: 500; margin-bottom: 5px;">Predictions Made</h3>
+        <p style="font-size: 36px; font-weight: 800; margin:0;">{{ total_predictions }}</p>
+    </div>
+</div>
+
+<div class="card">
+    <h3 style="font-size: 1.25rem; font-weight: 700; color: #0f172a; margin-bottom: 20px;">Recent Alerts</h3>
+    <table style="margin-top: 10px;">
+        <thead>
+            <tr>
+                <th>Vehicle</th>
+                <th>Status</th>
+                <th>Last Check</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for alert in recent_alerts %}
+            <tr>
+                <td style="font-weight: 600; color: #1e293b;">{{ alert[0] }}</td>
+                <td>
+                    {% if "Maintenance" in alert[1] %}
+                        <span style="display:inline-block; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; background: #fee2e2; color: #ef4444;">Maintenance Due</span>
+                    {% else %}
+                        <span style="display:inline-block; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; background: #dcfce3; color: #10b981;">Healthy</span>
+                    {% endif %}
+                </td>
+                <td style="color: #64748b; font-weight: 500;">{{ alert[2].strftime('%d %b %Y') }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="3" style="color:#64748b; text-align:center; padding:30px;">
+                    <i class="fas fa-check-circle" style="font-size: 24px; color: #cbd5e1; margin-bottom: 10px; display: block;"></i>
+                    No predictions yet. Run a prediction to see alerts.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- SERVICE CENTERS & MECHANICS -->
+<div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <h3 style="font-size:1.25rem; font-weight:700; color:#0f172a; margin:0;">🔧 Nearby Services & Mechanics</h3>
+    </div>
+
+    <!-- FILTER CHIPS -->
+    <div style="display:flex; gap:10px; margin-bottom:25px;" id="dashChips">
+        <button onclick="dashFilter('all',this)" style="padding: 10px 20px; border-radius: 20px; font-size: 14px; background: #3b82f6; box-shadow: none; width: auto;">All</button>
+        <button onclick="dashFilter('service',this)" style="padding: 10px 20px; border-radius: 20px; font-size: 14px; background: #f1f5f9; color: #475569; box-shadow: none; width: auto;">Service Centers</button>
+        <button onclick="dashFilter('mechanic',this)" style="padding: 10px 20px; border-radius: 20px; font-size: 14px; background: #f1f5f9; color: #475569; box-shadow: none; width: auto;">Mechanics</button>
+    </div>
+
+    <!-- CONTACTS GRID -->
+    <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:25px;" id="dashGrid">
+
+        <div class="vehicle-card" data-type="service" style="width: 100%;">
+            <div style="display: flex; gap: 15px; margin-bottom: 20px; align-items: center;">
+                <div style="width: 45px; height: 45px; background: #eff6ff; color: #3b82f6; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+                    <i class="fas fa-industry"></i>
+                </div>
+                <div>
+                    <h3 style="font-size: 16px; margin: 0; color: #0f172a;">Hyundai</h3>
+                    <span style="font-size: 12px; font-weight: 600; color: #3b82f6;">Service Center</span>
+                </div>
+            </div>
+            <div style="color: #64748b; font-size: 14px; margin-bottom: 20px; line-height: 1.6;">
+                <p><i class="fas fa-map-marker-alt" style="width: 20px; color: #cbd5e1;"></i> Ring Road, Vadodara</p>
+                <p><i class="fas fa-phone-alt" style="width: 20px; color: #cbd5e1;"></i> +91 6123 45678</p>
+            </div>
+            <div style="display: flex; gap: 12px;">
+                <a href="tel:+912612345678" style="flex:1; text-align:center; padding:10px; border-radius:10px; background:#f1f5f9; color:#0f172a; text-decoration:none; font-size:14px; font-weight:600; transition: 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.02)">Call</a>
+                <a href="https://maps.google.com/?q=Ring+Road+Surat" style="flex:1; text-align:center; padding:10px; border-radius:10px; background:#eff6ff; color:#3b82f6; text-decoration:none; font-size:14px; font-weight:600; transition: 0.3s;">Map</a>
+            </div>
+        </div>
+
+        <div class="vehicle-card" data-type="service" style="width: 100%;">
+            <div style="display: flex; gap: 15px; margin-bottom: 20px; align-items: center;">
+                <div style="width: 45px; height: 45px; background: #eff6ff; color: #3b82f6; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+                    <i class="fas fa-industry"></i>
+                </div>
+                <div>
+                    <h3 style="font-size: 16px; margin: 0; color: #0f172a;">Krishna Motors Kia</h3>
+                    <span style="font-size: 12px; font-weight: 600; color: #3b82f6;">Service Center</span>
+                </div>
+            </div>
+            <div style="color: #64748b; font-size: 14px; margin-bottom: 20px; line-height: 1.6;">
+                <p><i class="fas fa-map-marker-alt" style="width: 20px; color: #cbd5e1;"></i> Adajan, Surat</p>
+                <p><i class="fas fa-phone-alt" style="width: 20px; color: #cbd5e1;"></i> +91 98981 23456</p>
+            </div>
+            <div style="display: flex; gap: 12px;">
+                <a href="tel:+919898123456" style="flex:1; text-align:center; padding:10px; border-radius:10px; background:#f1f5f9; color:#0f172a; text-decoration:none; font-size:14px; font-weight:600; transition: 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.02)">Call</a>
+                <a href="https://maps.google.com/?q=Adajan+Road+Surat" style="flex:1; text-align:center; padding:10px; border-radius:10px; background:#eff6ff; color:#3b82f6; text-decoration:none; font-size:14px; font-weight:600; transition: 0.3s;">Map</a>
+            </div>
+        </div>
+
+        <div class="vehicle-card" data-type="mechanic" style="width: 100%;">
+            <div style="display: flex; gap: 15px; margin-bottom: 20px; align-items: center;">
+                <div style="width: 45px; height: 45px; background: #ecfdf5; color: #10b981; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+                    <i class="fas fa-wrench"></i>
+                </div>
+                <div>
+                    <h3 style="font-size: 16px; margin: 0; color: #0f172a;">Ramesh Patel</h3>
+                    <span style="font-size: 12px; font-weight: 600; color: #10b981;">Mechanic</span>
+                </div>
+            </div>
+            <div style="color: #64748b; font-size: 14px; margin-bottom: 20px; line-height: 1.6;">
+                <p><i class="fas fa-map-marker-alt" style="width: 20px; color: #cbd5e1;"></i> MG Road,Ahmedabad</p>
+                <p><i class="fas fa-phone-alt" style="width: 20px; color: #cbd5e1;"></i> +91 98765 43210</p>
+            </div>
+            <div style="display: flex; gap: 12px;">
+                <a href="tel:+919876543210" style="flex:1; text-align:center; padding:10px; border-radius:10px; background:#f1f5f9; color:#0f172a; text-decoration:none; font-size:14px; font-weight:600; transition: 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.02)">Call</a>
+                <a href="https://wa.me/919876543210" style="flex:1; text-align:center; padding:10px; border-radius:10px; background:#ecfdf5; color:#10b981; text-decoration:none; font-size:14px; font-weight:600; transition: 0.3s;">WhatsApp</a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+function dashFilter(type, el) {
+    const buttons = document.querySelectorAll('#dashChips button');
+    buttons.forEach(btn => {
+        btn.style.background = '#f1f5f9';
+        btn.style.color = '#475569';
+    });
+    el.style.background = '#3b82f6';
+    el.style.color = 'white';
+
+    document.querySelectorAll('.vehicle-card').forEach(card => {
+        card.style.display = (type === 'all' || card.dataset.type === type) ? 'flex' : 'none';
+        if(card.style.display === 'flex') card.style.flexDirection = 'column'; // fix
+    });
+}
+</script>
+
+{% endblock %}

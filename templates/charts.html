@@ -1,0 +1,77 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<style>
+.grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:30px;
+}
+
+.graph-container{
+    height:300px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background: rgba(248, 250, 252, 0.8);
+    border-radius: 16px;
+    padding: 10px;
+    border: 1px solid rgba(0,0,0,0.02);
+    position: relative;
+    overflow: hidden;
+}
+
+.skeleton {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, #f1f5f9 25%, #f8fafc 50%, #f1f5f9 75%);
+    background-size: 400% 100%;
+    animation: shimmer 1.5s infinite linear;
+    border-radius: 16px;
+    z-index: 1;
+    transition: opacity 0.5s ease;
+}
+
+@keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.graph-container img{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    z-index: 2;
+    position: relative;
+}
+
+.graph-container img.loaded {
+    opacity: 1;
+}
+</style>
+
+<h2>📊 Prediction Analysis Charts</h2>
+
+<div class="grid">
+    <div class="card">
+        <h3>📊 Feature Importance Analysis</h3>
+        <p style="color: #64748b; margin-bottom: 20px; font-size: 0.95rem;">Understand which vehicle features are driving the predictions.</p>
+        <div class="graph-container">
+            <div class="skeleton"></div>
+            <img src="data:image/png;base64,{{ graph1 }}" alt="Feature Importance" onload="this.classList.add('loaded'); this.previousElementSibling.style.opacity='0'; setTimeout(()=>this.previousElementSibling.style.display='none', 500);">
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>🥧 Classification Distribution</h3>
+        <p style="color: #64748b; margin-bottom: 20px; font-size: 0.95rem;">Breakdown of predictions for the current machine learning model.</p>
+        <div class="graph-container">
+            <div class="skeleton"></div>
+            <img src="data:image/png;base64,{{ graph2 }}" alt="Prediction Distribution" onload="this.classList.add('loaded'); this.previousElementSibling.style.opacity='0'; setTimeout(()=>this.previousElementSibling.style.display='none', 500);">
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div style="font-size: 28px; font-weight: 800; color: #0f172a; letter-spacing: -0.5px; margin-bottom: 25px;">📁 History Log</div>
+
+<div class="card">
+    <h3 style="font-size: 1.25rem; font-weight: 700; color: #0f172a; margin-bottom: 20px;">Your Previous Predictions</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Vehicle Name</th>
+                <th>Prediction Result</th>
+                <th>ML Confidence</th>
+                <th>Date Executed</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for h in history %}
+            <tr>
+                <td style="font-weight: 600; color: #1e293b;">{{ h[0] }}</td>
+                <td>
+                    {% if "Required" in h[1] %}
+                        <span style="display:inline-block; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; background: #fee2e2; color: #ef4444;">{{ h[1] }}</span>
+                    {% else %}
+                        <span style="display:inline-block; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; background: #dcfce3; color: #10b981;">{{ h[1] }}</span>
+                    {% endif %}
+                </td>
+                <td style="color: #64748b; font-weight: 500;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        {{ h[2] }}%
+                        <div style="flex: 1; min-width: 50px; background: #f1f5f9; height: 6px; border-radius: 3px;">
+                            <div style="width: {{ h[2] }}%; height: 100%; background: #3b82f6; border-radius: 3px;"></div>
+                        </div>
+                    </div>
+                </td>
+                <td style="color: #64748b; font-weight: 500;">{{ h[3] }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="4" style="color:#64748b; text-align:center; padding:40px;">
+                    <div style="font-size: 30px; color: #cbd5e1; margin-bottom: 10px;"><i class="fas fa-folder-open"></i></div>
+                    No history logs found. Run a prediction to start building your vehicle history.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

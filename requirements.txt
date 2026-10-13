@@ -1,0 +1,10 @@
+
+Flask
+Werkzeug
+mysql-connector-python
+pandas
+numpy
+scikit-learn
+joblib
+matplotlib
+seaborn

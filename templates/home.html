@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div style="font-size: 28px; font-weight: 800; color: #0f172a; letter-spacing: -0.5px; margin-bottom: 25px;">Welcome!</div>
+
+<div class="card">
+    <h3 style="font-size: 1.5rem; color: #0f172a; margin-bottom: 10px;">Vehicle Maintenance Dashboard Navigation</h3>
+    <p style="color: #64748b; font-size: 1.05rem; margin-bottom: 30px;">Navigate through the core analytical features of the system.</p>
+
+    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+        <a href="/prediction" style="text-decoration:none;"><button><i class="fas fa-magic" style="margin-right: 8px;"></i> Predict Maintenance</button></a>
+        <a href="/" style="text-decoration:none;"><button style="background: white; color: #0f172a; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px rgba(0,0,0,0.02);"><i class="fas fa-home" style="margin-right: 8px;"></i> Go to Dashboard</button></a>
+        <a href="/correlation" style="text-decoration:none;"><button style="background: white; color: #0f172a; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px rgba(0,0,0,0.02);"><i class="fas fa-chart-bar" style="margin-right: 8px;"></i> View Correlation Graphs</button></a>
+        <a href="/model" style="text-decoration:none;"><button style="background: white; color: #0f172a; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px rgba(0,0,0,0.02);"><i class="fas fa-robot" style="margin-right: 8px;"></i> Model Comparison Data</button></a>
+    </div>
+</div>
+
+{% endblock %}
